@@ -50,6 +50,18 @@ def home(request):
     }
     return render(request, 'app/home.html', context)
 
+def registerPatientPage(request):
+    return render(request, 'app/registerPatientPage.html')
+
+def registerInsurancePage(request):
+    return render(request, 'app/registerInsurancePage.html')
+
+def registerMedicationPage(request):
+    return render(request, 'app/registerMedicationPage.html')
+
+def registerAlergiesPage(request):
+    return render(request, 'app/registerAlergiesPage.html')
+
 def registerPatient(request):
     print('registering patient')
     #tx_hash = contract.functions.setingPatientInfo('Nour', '07.07.1999', 'CV14GJ', '80', '183').transact()
