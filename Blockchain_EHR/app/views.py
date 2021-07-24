@@ -1,6 +1,9 @@
 import json
 from django.shortcuts import render, redirect
 
+'''forms'''
+from .forms import InsuranceForm
+
 ''' Create your views here. '''
 from django.http import HttpResponse
 from web3 import Web3
@@ -36,8 +39,6 @@ def home(request):
     user_medication = contract.functions.getMedication().call()
     user_allergies = contract.functions.getAllergies().call()
 
-    print('user medication', user_medication)
-
     context ={
         'name': name,
         'dob': dob,
@@ -50,18 +51,6 @@ def home(request):
     }
     return render(request, 'app/home.html', context)
 
-def registerPatientPage(request):
-    return render(request, 'app/registerPatientPage.html')
-
-def registerInsurancePage(request):
-    return render(request, 'app/registerInsurancePage.html')
-
-def registerMedicationPage(request):
-    return render(request, 'app/registerMedicationPage.html')
-
-def registerAlergiesPage(request):
-    return render(request, 'app/registerAlergiesPage.html')
-
 def registerPatient(request):
     print('registering patient')
     #tx_hash = contract.functions.setingPatientInfo('Nour', '07.07.1999', 'CV14GJ', '80', '183').transact()
@@ -71,11 +60,20 @@ def registerPatient(request):
 
 def registerInsurance(request):
     print('registering insurance')
-    #tx_hash = contract.functions.setInsurance(str(insurance_no)).transact()
-    '''wait for transaction reciept'''
-    #web3.eth.waitForTransactionReceipt(tx_hash)
-    return redirect('/')
-
+    if request.method == 'POST':
+        form = InsuranceForm(request.POST)
+        # check whether it's valid:
+        if form.is_valid():
+            insuranceNumber = form.cleaned_data['insuranceNumber']
+            print('recieved insurance',  insuranceNumber)
+            tx_hash = contract.functions.setInsurance(insuranceNumber).transact()
+            '''wait for transaction reciept'''
+            web3.eth.waitForTransactionReceipt(tx_hash)
+            return redirect('/')
+    else:
+        form = InsuranceForm()
+        return render(request, 'app/registerInsurancePage.html', {'form':form})
+    
 def registerMedication(request):
     print('registering medication')
     #tx_hash = contract.functions.setMedication('medication').transact()
