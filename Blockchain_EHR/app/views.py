@@ -2,7 +2,7 @@ import json
 from django.shortcuts import render, redirect
 
 '''forms'''
-from .forms import InsuranceForm
+from .forms import *
 
 ''' Create your views here. '''
 from django.http import HttpResponse
@@ -47,15 +47,31 @@ def home(request):
         'weight' : weight,
         'insurance': user_insurance,
         'medication': user_medication,
-        'allergies': user_allergies
+        'alergies': user_allergies
     }
     return render(request, 'app/home.html', context)
 
 def registerPatient(request):
     print('registering patient')
-    #tx_hash = contract.functions.setingPatientInfo('Nour', '07.07.1999', 'CV14GJ', '80', '183').transact()
-    '''wait for transaction reciept'''
-    #web3.eth.waitForTransactionReceipt(tx_hash)
+    if request.method == 'POST':
+        form = PatientForm(request.POST)
+        # check whether it's valid:
+        if form.is_valid():
+            name = form.cleaned_data['name']
+            dob = form.cleaned_data['dob']
+            postCode = form.cleaned_data['postCode']
+            height = form.cleaned_data['height']
+            weight = form.cleaned_data['weight']
+            '''call smartcontract setingPatientInfo function'''
+            tx_hash = contract.functions.setingPatientInfo(name, dob, postCode, height, weight).transact()
+            '''wait for transaction reciept'''
+            web3.eth.waitForTransactionReceipt(tx_hash)
+            return redirect('/')
+   
+    form = PatientForm()
+    return render(request, 'app/registerPatientPage.html', {'form':form})
+    
+    
     return redirect('/')
 
 def registerInsurance(request):
@@ -65,26 +81,46 @@ def registerInsurance(request):
         # check whether it's valid:
         if form.is_valid():
             insuranceNumber = form.cleaned_data['insuranceNumber']
-            print('recieved insurance',  insuranceNumber)
+            '''call smartcontract setInsurance function'''
             tx_hash = contract.functions.setInsurance(insuranceNumber).transact()
             '''wait for transaction reciept'''
             web3.eth.waitForTransactionReceipt(tx_hash)
             return redirect('/')
-    else:
-        form = InsuranceForm()
-        return render(request, 'app/registerInsurancePage.html', {'form':form})
+    
+    form = InsuranceForm()
+    return render(request, 'app/registerInsurancePage.html', {'form':form})
     
 def registerMedication(request):
     print('registering medication')
-    #tx_hash = contract.functions.setMedication('medication').transact()
-    '''wait for transaction reciept'''
-    #web3.eth.waitForTransactionReceipt(tx_hash)
-    return redirect('/')
+    if request.method == 'POST':
+        form = MedicationForm(request.POST)
+        if form.is_valid():
+            medicine = form.cleaned_data['medicine']
+            '''call smartcontract setMedication function'''
+            tx_hash = contract.functions.setMedication(medicine).transact()
+            '''wait for transaction reciept'''
+            web3.eth.waitForTransactionReceipt(tx_hash)
+            return redirect('/')
+    form = MedicationForm()
+    return render(request, 'app/registerMedicationPage.html', {'form':form})
+    
+    
 
-def registerAllergies(request):
+def registerAlergies(request):
     print('registering allergies')
-    #tx_hash = contract.functions.setAllergies('allergy').transact()
-    '''wait for transaction reciept'''
-    #web3.eth.waitForTransactionReceipt(tx_hash)
-    return redirect('/')
+    if request.method == 'POST':
+        form = AlergiesForm(request.POST)
+        if form.is_valid():
+            alergy = form.cleaned_data['alergy']
+            '''call smartcontract setAllergies function'''
+            tx_hash = contract.functions.setAllergies(alergy).transact()
+            '''wait for transaction reciept'''
+            web3.eth.waitForTransactionReceipt(tx_hash)
+            return redirect('/')
+    form = AlergiesForm()
+    return render(request, 'app/registerAlergiesPage.html', {'form':form})
+
+
+   
+    
 

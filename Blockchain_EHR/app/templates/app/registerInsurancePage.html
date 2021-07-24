@@ -12,14 +12,12 @@
     </head>
     <form action='' method="POST">
         {%csrf_token%}
-       
-        {% for form in form %}
+
             <div class="form-group">
                 <label>Insurance Number</label>
                 {{form}}
                 <small id="emailHelp" class="form-text text-muted">Your Insurance No. will be stored on the Blockchain Network</small>
             </div>
-        {% endfor %}
         
         <button type="submit" value="submit" class="btn btn-primary">Submit</button>
     </form>
