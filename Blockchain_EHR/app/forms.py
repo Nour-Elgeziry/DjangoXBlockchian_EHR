@@ -1,5 +1,9 @@
 from django import forms
 
+class LoginForm(forms.Form):
+    address = forms.CharField(label ='Address', max_length=200)
+    privateKey = forms.CharField(label ='Address', max_length=200)
+
 class PatientForm(forms.Form):
     name = forms.CharField(label='Name', max_length=100)
     dob = forms.CharField(label='Dob', max_length=100)
